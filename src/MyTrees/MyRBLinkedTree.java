@@ -1,6 +1,5 @@
 package MyTrees;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +15,48 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
 
     public MyRBLinkedTree() {
         colorMap = new HashMap<>();
+    }
+
+    private Color getColor(Position<E> position) {
+        if (position == null) return Color.BLACK;               // Every external node is always black
+        return colorMap.get(position);
+    }
+
+    private void setColor(Position<E> position, Color color) {
+        colorMap.put(position, color);
+    }
+
+    /*
+     * @returns number of black node when moving from current node to root
+     */
+    private int getBlackHeight(Position<E> position) {
+        int height = 0;
+        while(position != null) {
+            if (getColor(position) == Color.BLACK)
+                height++;
+            position = hidden.parent(position);
+        }
+        return height;
+    }
+
+    /*
+     * Test whether current object violates any of RB tree constraints
+     */
+    public boolean isRB() {
+        int blackHeight = 0;
+        if (getColor(hidden.root()) == Color.RED) return false;
+        for (Position<E> position : inorder()) {
+            if (getColor(position) == Color.RED) {
+                for (Position<E> child : hidden.children(position))
+                    if (getColor(child) == Color.RED) return false;    // Child of red is always black
+            }
+            if (hidden.isExternal(position)) {
+                if (blackHeight == 0)
+                    blackHeight = getBlackHeight(position);
+                else if (blackHeight != getBlackHeight(position)) return false;
+            }
+        }
+        return true;
     }
 
     private Position<E> grandparent(Position <E> p) {
@@ -40,13 +81,13 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
         Position <E> newPosition = super.add(value);
         if (newPosition == null) return null;
         if (newPosition != hidden.root())
-            colorMap.put(newPosition, Color.RED);
+            setColor(newPosition, Color.RED);
         else
-            colorMap.put(newPosition, Color.BLACK);
+            setColor(newPosition, Color.BLACK);
 
-        if (colorMap.get(hidden.parent(newPosition)) == Color.RED) {
+        if (getColor(hidden.parent(newPosition)) == Color.RED) {
             Position<E> parent = hidden.parent(newPosition);
-            if (sibling(parent) == null || colorMap.get(sibling(parent)) == Color.BLACK)
+            if (sibling(parent) == null || getColor(sibling(parent)) == Color.BLACK)
                 restructure(newPosition);
             else
                 recolor(parent);
@@ -65,9 +106,9 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
         Position<E> y = hidden.parent(x);
 
         // Temporarily change color of the three nodes to red, and further we change color of b
-        colorMap.put(x, Color.RED);
-        colorMap.put(y, Color.RED);
-        colorMap.put(z, Color.RED);
+        setColor(x, Color.RED);
+        setColor(y, Color.RED);
+        setColor(z, Color.RED);
 
         AbstractBinaryTree.Direction direction_1 =
                 (y == hidden.getLeftChild(z)
@@ -121,21 +162,21 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
             }
         }
 
-        colorMap.put(b, Color.BLACK);
+        setColor(b, Color.BLACK);
         return b;
     }
 
     private void recolor(Position<E> p) {
         assert (sibling(p) != null);         // We assume sibling is red, so it could not be null
 
-        colorMap.put(p, Color.BLACK);
-        colorMap.put(sibling(p), Color.BLACK);
+        setColor(p, Color.BLACK);
+        setColor(sibling(p), Color.BLACK);
         if (hidden.root() != hidden.parent(p))
-            colorMap.put(hidden.parent(p), Color.RED);
+            setColor(hidden.parent(p), Color.RED);
 
         if (grandparent(p) != null &&
-                colorMap.get(grandparent(p)) == Color.RED) {
-            if (colorMap.get(sibling(grandparent(p))) == Color.RED) {
+                getColor(grandparent(p)) == Color.RED) {
+            if (getColor(sibling(grandparent(p))) == Color.RED) {
                 recolor(grandparent(p));
             }
             else {
@@ -146,7 +187,7 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
 
     private void drawRecursive(String[][] drawPos, Position<E> s, int level, int pos) {
         if(drawPos[level] == null) drawPos[level] = new String[(int)Math.pow(2, level)];
-        drawPos[level][pos] = s.getElement().toString() + " " + colorMap.get(s).toString();
+        drawPos[level][pos] = s.getElement().toString() + " " + getColor(s).toString();
         if (hidden.getLeftChild(s) != null)
             drawRecursive(drawPos, hidden.getLeftChild(s), level + 1, pos * 2);
         if (hidden.getRightChild(s) != null)
@@ -184,13 +225,13 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
     /*
      * It's just for task
      */
-    public E getChildValue(Position<E> p, AbstractBinaryTree.Direction direction) {
-        switch (direction) {
-            case LEFT: return (hidden.getLeftChild(p) != null) ? hidden.getLeftChild(p).getElement() : null;
-            case RIGHT: return (hidden.getRightChild(p) != null) ? hidden.getRightChild(p).getElement() : null;
-        }
-        return null;
-    }
+//    public E getChildValue(Position<E> p, AbstractBinaryTree.Direction direction) {
+//        switch (direction) {
+//            case LEFT: return (hidden.getLeftChild(p) != null) ? hidden.getLeftChild(p).getElement() : null;
+//            case RIGHT: return (hidden.getRightChild(p) != null) ? hidden.getRightChild(p).getElement() : null;
+//        }
+//        return null;
+//    }
 
     public Position<E> delete(E value) {
         return null;

@@ -127,6 +127,23 @@ public class MyArrayTree<E> extends AbstractTree<E>{
         }
     }
 
+    /*
+     * Adds value to the end of array, i.e. very useful for building complete tree
+     */
+    public Position<E> appendChild(E value) {
+        Node<E> newChild = new Node<>(value, size);
+        if (size >= valuesArray.length) resizeValueArray();
+        valuesArray[size++] = newChild;
+        return newChild;
+    }
+
+    /*
+     * Returns the last child
+     */
+    public Position<E> getLast() {
+        return valuesArray[size - 1];
+    }
+
     @Override
     public Position<E> root() {
         return valuesArray[0];
@@ -146,6 +163,7 @@ public class MyArrayTree<E> extends AbstractTree<E>{
     public Position<E> parent(Position<E> p) throws IllegalArgumentException {
         if (validate(p) == null) throw new IllegalArgumentException("You give a node which is not from the tree");
         Node<E> currentNode = (Node)p;
+        if (currentNode.position == 0) return null;
         int newPos = (currentNode.position - 1) / degree;
         return valuesArray[newPos];
     }
@@ -211,6 +229,19 @@ public class MyArrayTree<E> extends AbstractTree<E>{
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public void swap(Position<E> oldPosition, Position<E> newPosition) {
+        if (validate(oldPosition) == null) throw new IllegalArgumentException("You give a node which is not from the tree");
+        if (validate(newPosition) == null) throw new IllegalArgumentException("You give a node which is not from the tree");
+        Node<E> tmpOld = (Node<E>)oldPosition;
+        Node<E> tmpNew = (Node<E>)newPosition;
+        valuesArray[tmpOld.position] = tmpNew;
+        valuesArray[tmpNew.position] = tmpOld;
+        tmpNew.position += tmpOld.position;
+        tmpOld.position = tmpNew.position - tmpOld.position;
+        tmpNew.position = tmpNew.position - tmpOld.position;
+    }
+
     @Override
     public int size() {
         return this.size;
@@ -218,6 +249,10 @@ public class MyArrayTree<E> extends AbstractTree<E>{
 
     @Override
     public void draw() {
-
+        // I'm to lazy to write actual drawing...
+        for (Node<E> node: valuesArray) {
+            if (node == null) break;
+            System.out.println(node.getElement().toString());
+        }
     }
 }

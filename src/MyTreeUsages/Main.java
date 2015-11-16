@@ -7,7 +7,8 @@ public class Main {
     public static void main(String[] args) {
 //        ArithmeticExpressionParser.run();
 //        BSTTest.run();
-        AVLTreeTest.run();
+//        AVLTreeTest.run();
 //        RBTreeTest.run();
+        ArrayHeapTest.run();
     }
 }
