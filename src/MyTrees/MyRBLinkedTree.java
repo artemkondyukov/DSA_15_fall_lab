@@ -77,6 +77,14 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
                 : AbstractBinaryTree.Direction.LEFT);
     }
 
+    private Position<E> uncle(Position<E> p) {
+        if (hidden.validate(p) == null)
+            throw new IllegalArgumentException("The node is not from the tree");
+        if (hidden.root() == p) return null;
+        Position<E> parent = hidden.parent(p);
+        return sibling(parent);
+    }
+
     public Position<E> add(E value) {
         Position <E> newPosition = super.add(value);
         if (newPosition == null) return null;
@@ -87,7 +95,7 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
 
         if (getColor(hidden.parent(newPosition)) == Color.RED) {
             Position<E> parent = hidden.parent(newPosition);
-            if (sibling(parent) == null || getColor(sibling(parent)) == Color.BLACK)
+            if (getColor(sibling(parent)) == Color.BLACK)
                 restructure(newPosition);
             else
                 recolor(parent);
@@ -213,9 +221,7 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
             }
             System.out.println();
         }
-        System.out.println();
-        System.out.println();
-        System.out.println();
+        System.out.println("\n\n");
     }
 
     public int height () {
@@ -234,6 +240,30 @@ public class MyRBLinkedTree<E extends Comparable <? super E >> extends MyLinkedB
 //    }
 
     public Position<E> delete(E value) {
+        Position<E> current = find(value);
+        Position<E> predecessor = hidden.predecessor(current);
+        Position<E> deleted = hidden.numChildren(current) > 1 ? predecessor : current;
+        hidden.remove(deleted);
+        if (getColor(deleted) == Color.BLACK) {
+            Position<E> child = hidden.getLeftChild(deleted) == null
+                    ? hidden.getRightChild(deleted)
+                    : hidden.getLeftChild(deleted);
+
+            assert(hidden.numChildren(deleted) < 2);
+
+            if (hidden.numChildren(deleted) == 1) {
+                // Black-height rule
+                assert (getColor(child) == Color.RED);
+
+                // Change color of child so as to maintain black-height rule
+                setColor(child, Color.BLACK);
+            }
+            // Deleted had no children and after removing of it changed black-height
+            else {
+
+            }
+        }
+
         return null;
     }
 }

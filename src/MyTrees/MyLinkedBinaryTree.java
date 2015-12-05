@@ -26,6 +26,10 @@ public class MyLinkedBinaryTree<E> extends AbstractBinaryTree<E> {
             return height;
         }
 
+        /*
+         * Recursive function increasing (fixing)
+         * height of all ancestors of current node
+         */
         public void increaseHeight(int val) {
             this.height += val;
             Node<E> tmp = parent;
@@ -38,6 +42,10 @@ public class MyLinkedBinaryTree<E> extends AbstractBinaryTree<E> {
             }
         }
 
+        /*
+         * Recursive function increasing size
+         * of all ancestors of current node
+         */
         public void increaseSize(int val) {
             this.size += val;
             Node<E> tmp = parent;
@@ -116,22 +124,18 @@ public class MyLinkedBinaryTree<E> extends AbstractBinaryTree<E> {
     @Override
     public Position<E> removeLeftChild(Position<E> p) {
         if (validate(p) == null) throw  new IllegalArgumentException("The position is not from the tree");
+
         Node<E> currentNode = (Node<E>)p;
         int heightDiff = heightOfSubtree(currentNode.left) - heightOfSubtree(currentNode.right);
-        currentNode.increaseHeight(heightDiff > 0 ? -heightDiff : 0);
-//        if (currentNode.right != null)
-//            currentNode.increaseHeight(currentNode.right.height < currentNode.left.height
-//                    ? currentNode.right.height - currentNode.left.height
-//                    : 0);
-//        else
-//            currentNode.increaseHeight(-currentNode.height);
 
+        // You are removing left subtree of a node, so let's change height and size of its ancestors
+        currentNode.increaseHeight(heightDiff > 0 ? -heightDiff : 0);
         Node<E> result = currentNode.left;
         if (result == null) return null;
-
-//        size -= sizeOfSubtree(currentNode.left);
         currentNode.increaseSize(-currentNode.left.size);
-        currentNode.left.parent = currentNode.left;         // Defunct
+
+        // Defunct
+        currentNode.left.parent = currentNode.left;
         currentNode.left = null;
         return result;
     }
@@ -139,22 +143,18 @@ public class MyLinkedBinaryTree<E> extends AbstractBinaryTree<E> {
     @Override
     public Position<E> removeRightChild(Position<E> p) {
         if (validate(p) == null) throw  new IllegalArgumentException("The position is not from the tree");
+
         Node<E> currentNode = (Node<E>)p;
         int heightDiff = heightOfSubtree(currentNode.right) - heightOfSubtree(currentNode.left);
-        currentNode.increaseHeight(heightDiff > 0 ? -heightDiff : 0);
-//        if (currentNode.left != null)
-//            currentNode.increaseHeight(currentNode.left.height < currentNode.right.height
-//                    ? currentNode.left.height - currentNode.right.height
-//                    : 0);
-//        else
-//            currentNode.increaseHeight(-currentNode.height);
 
+        // You are removing right subtree of a node, so let's change height and size of its ancestors
+        currentNode.increaseHeight(heightDiff > 0 ? -heightDiff : 0);
         Node<E> result = currentNode.right;
         if (result == null) return null;
-
-//        size -= sizeOfSubtree(currentNode.right);
         currentNode.increaseSize(-currentNode.right.size);
-        currentNode.right.parent = currentNode.right;         // Defunct
+
+        // Defunct
+        currentNode.right.parent = currentNode.right;
         currentNode.right = null;
         return result;
     }
@@ -169,15 +169,13 @@ public class MyLinkedBinaryTree<E> extends AbstractBinaryTree<E> {
     }
 
     private int sizeOfSubtree(Position<E> p) {
+        // It's a little bit weird, but actually size of an empty subtree is 0
+        // whereas if you try to get size of something strange you'd better get
+        // an exception
         if (p == null) return 0;
         if (validate(p) == null) throw new IllegalArgumentException("Position is not from tree");
+
         Node<E> currentNode = (Node<E>)p;
-//        int result = 0;
-//        if (currentNode.left != null)
-//            result += sizeOfSubtree(currentNode.left);
-//        if (currentNode.right != null)
-//            result += sizeOfSubtree(currentNode.right);
-//        return result + 1;
         return currentNode.size;
     }
 
@@ -221,7 +219,6 @@ public class MyLinkedBinaryTree<E> extends AbstractBinaryTree<E> {
             parentNode.increaseHeight(subtreeNode.getHeight() + 1);
         parentNode.left = subtreeNode;
         subtreeNode.parent = parentNode;
-//        size += sizeOfSubtree(subtreeNode);
 
         parentNode.increaseSize(subtreeNode.size);
     }
@@ -244,7 +241,6 @@ public class MyLinkedBinaryTree<E> extends AbstractBinaryTree<E> {
             parentNode.increaseHeight(subtreeNode.getHeight() + 1);
         parentNode.right = subtreeNode;
         subtreeNode.parent = parentNode;
-//        size += sizeOfSubtree(subtreeNode);
 
         parentNode.increaseSize(subtreeNode.size);
     }
@@ -297,9 +293,7 @@ public class MyLinkedBinaryTree<E> extends AbstractBinaryTree<E> {
         if(!(p instanceof Node)) {
             return null;
         }
-//        Node<E> currentNode = (Node<E>)p;
-//        if (currentNode.parent == currentNode)                      // DEFUNCT
-//            return null;
+
         return p;
     }
 

@@ -66,8 +66,7 @@ public class ArithmeticExpressionParser {
     }
 
     private static boolean isValidOperator(char c) {
-        if (c == '+' || c == '-' || c == '*' || c == '/' || c == SENTINEL) return true;
-        return false;
+        return c == '+' || c == '-' || c == '*' || c == '/' || c == SENTINEL;
     }
 
     private static boolean recursiveE(BufferedReader br, Stack<Character> operators,

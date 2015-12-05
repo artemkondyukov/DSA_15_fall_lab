@@ -21,7 +21,6 @@ public abstract class AbstractBinaryTree<E> extends AbstractTree<E> {
     public abstract Position<E> addRightChild(Position<E> p, E value);
     public abstract Position<E> removeLeftChild(Position<E> p);
     public abstract Position<E> removeRightChild(Position<E> p);
-    public abstract Position<E> removeRoot();
 
     public Iterable<Position<E>> inorder() {
         if (isEmpty()) return null;
@@ -31,7 +30,7 @@ public abstract class AbstractBinaryTree<E> extends AbstractTree<E> {
     }
 
     /*
-     * Recursive function for convenient preorder traversal
+     * Recursive function for convenient inorder traversal
      * @p is a root of subtree to be traversal
      * @snapshot is a collection where we place elements to
      */

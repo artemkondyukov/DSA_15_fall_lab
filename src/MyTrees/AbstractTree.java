@@ -7,12 +7,6 @@ import java.util.*;
  */
 public abstract class AbstractTree<E> implements Tree<E> {
 
-    public boolean isInternal(Position<E> p) {return numChildren(p) > 0;}
-    public boolean isExternal(Position<E> p) {return numChildren(p) == 0;}
-    public boolean isRoot(Position<E> p) {return parent(p) == null;}
-
-    public boolean isEmpty() {return size() == 0;}
-
     @Override
     public int height() {
         return heightOfSubtree(root());
@@ -22,7 +16,8 @@ public abstract class AbstractTree<E> implements Tree<E> {
     public int heightOfSubtree(Position<E> p) {
         if (p == null) return 0;                    // For AVL, height of empty tree is 0
         int maxChildHeight = 0;
-        for (Position<E> child: children(p)) {
+        for (Position<
+                E> child: children(p)) {
             if (heightOfSubtree(child) > maxChildHeight)
                 maxChildHeight = heightOfSubtree(child);
         }
@@ -39,15 +34,15 @@ public abstract class AbstractTree<E> implements Tree<E> {
 
     @Override
     public Iterator<E> iterator() {
-        return new TreePreorderIterator<>();
+        return new TreePreorderIterator();
     }
 
-    public class TreePreorderIterator<E> implements Iterator<E> {
+    public class TreePreorderIterator implements Iterator<E> {
         private Iterable<Position<E>> snapshot;
 
         @SuppressWarnings("unchecked")
         public TreePreorderIterator() {
-            AbstractTree<E> parent = (AbstractTree<E>) AbstractTree.this;
+            AbstractTree<E> parent = AbstractTree.this;
             snapshot = parent.preorder();
         }
 
@@ -91,7 +86,7 @@ public abstract class AbstractTree<E> implements Tree<E> {
     }
 
     /*
-     * Recursive function for convenient preorder traversal
+     * Recursive function for convenient postorder traversal
      * @p is a root of subtree to be traversal
      * @snapshot is a collection where we place elements to
      */
